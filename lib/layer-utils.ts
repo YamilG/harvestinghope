@@ -1207,6 +1207,9 @@ function layerLabelFallback(layer: Layer): string {
   return layer.customName || layer.name;
 }
 
+/** Layer types rendered as iframes, where a wrapping link can't receive clicks. */
+export const LINK_UNSUPPORTED_LAYER_NAMES = new Set(['htmlEmbed', 'map']);
+
 /**
  * Check if a layer can have a link added
  * @param layer - The layer to check
@@ -1218,8 +1221,18 @@ export function canLayerHaveLink(
   layer: Layer,
   allLayers: Layer[],
   type: 'layer' | 'richText' = 'layer'
-): { canHaveLinks: boolean; issue?: { type: 'self' | 'ancestor' | 'child' | 'richText'; layerName?: string } } {
+): { canHaveLinks: boolean; issue?: { type: 'self' | 'ancestor' | 'child' | 'richText' | 'unsupported'; layerName?: string } } {
   if (type === 'layer') {
+    // Iframe-based layers (Code embed, Map) capture pointer events, so a
+    // wrapping <a> never receives the click — a layer-level link would
+    // silently do nothing. Block it rather than offer a broken affordance.
+    if (LINK_UNSUPPORTED_LAYER_NAMES.has(layer.name)) {
+      return {
+        canHaveLinks: false,
+        issue: { type: 'unsupported' }
+      };
+    }
+
     // Checking if a layer-level link can be added
     // Can't add layer link if the layer has rich text links
     if (hasRichTextLinks(layer)) {
