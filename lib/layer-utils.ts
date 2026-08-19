@@ -665,6 +665,9 @@ export function isTextContentLayer(layer: Layer | null | undefined): boolean {
   return layer.name === 'heading' || layer.name === 'text';
 }
 
+/** Auto-assigned layer labels that should track the text/heading element type. */
+const AUTO_TEXT_HEADING_LABELS = new Set(['Text', 'Heading']);
+
 /**
  * Build the props to convert a text layer into a heading (or the reverse).
  * Switches the element `name` and its default HTML tag while preserving
@@ -673,22 +676,37 @@ export function isTextContentLayer(layer: Layer | null | undefined): boolean {
  * Only genuine block-level text and headings qualify: inline text used as
  * button captions, alert messages, or labels (tag `span`/`label`) is excluded
  * so conversion never emits an `<h2>` inside a `<button>` or `<p>`.
+ *
+ * An auto-assigned "Text"/"Heading" label is dropped so the layer shows its
+ * text content in the Layers panel; a user's custom layer name is preserved.
  */
 export function getTextHeadingConversion(
   layer: Layer | null | undefined
-): Pick<Layer, 'name' | 'settings'> | null {
+): Pick<Layer, 'name' | 'settings' | 'customName'> | null {
   if (!layer) return null;
+
+  // Drop an auto-assigned "Text"/"Heading" label so the converted layer shows
+  // its content again; keep a user-defined custom name.
+  const clearLabel = !!layer.customName && AUTO_TEXT_HEADING_LABELS.has(layer.customName);
 
   // Heading (incl. legacy text with an h1-h6 tag) → paragraph text.
   if (isHeadingLayer(layer)) {
-    return { name: 'text', settings: { ...layer.settings, tag: 'p' } };
+    return {
+      name: 'text',
+      settings: { ...layer.settings, tag: 'p' },
+      ...(clearLabel ? { customName: undefined } : {}),
+    };
   }
 
   // Block-level paragraph text → heading (skip inline span/label variants).
   if (layer.name === 'text') {
     const tag = layer.settings?.tag;
     if (!tag || tag === 'p') {
-      return { name: 'heading', settings: { ...layer.settings, tag: 'h2' } };
+      return {
+        name: 'heading',
+        settings: { ...layer.settings, tag: 'h2' },
+        ...(clearLabel ? { customName: undefined } : {}),
+      };
     }
   }
 
