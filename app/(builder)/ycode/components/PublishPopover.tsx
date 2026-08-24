@@ -9,6 +9,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Spinner } from '@/components/ui/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import Icon from '@/components/ui/icon';
+import { useEditComponent } from '@/hooks/use-edit-component';
+import { useEditorActions } from '@/hooks/use-editor-url';
+import { useEditorStore } from '@/stores/useEditorStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { cacheApi, publishApi } from '@/lib/api';
 import { cn, formatRelativeTime } from '@/lib/utils';
@@ -47,6 +50,13 @@ function getChangeTitle(change: PublishPreviewChange): string {
   if (change.status === 'unpublishing') return `${change.name} (will unpublish)`;
   if (change.status === 'new') return `${change.name} (new)`;
   return change.name;
+}
+
+function getChangeHref(category: ExpandableCategory, change: PublishPreviewChange): string | null {
+  if (change.status === 'deleted') return null;
+  if (category === 'pages') return `/ycode/pages/${change.id}`;
+  if (category === 'components') return `/ycode/components/${change.id}`;
+  return null;
 }
 
 function ChangeCategoryRow({
@@ -124,6 +134,9 @@ export default function PublishPopover({
   const [isClearCacheDialogOpen, setIsClearCacheDialogOpen] = useState(false);
 
   const { getSettingByKey, updateSetting } = useSettingsStore();
+  const { openPage } = useEditorActions();
+  const editComponent = useEditComponent();
+  const setEditingComponentId = useEditorStore((state) => state.setEditingComponentId);
   const publishedAt = getSettingByKey('published_at');
 
   // Load changes count when popover opens
@@ -353,18 +366,54 @@ export default function PublishPopover({
                         role="list"
                         className="max-h-32 overflow-y-auto pt-1 pl-7 text-xs text-muted-foreground"
                       >
-                        {details.map((change) => (
-                          <li
-                            key={change.id}
-                            title={getChangeTitle(change)}
-                            className={cn(
-                              'truncate py-1 leading-4',
-                              change.status === 'deleted' && 'line-through'
-                            )}
-                          >
-                            {change.name}
-                          </li>
-                        ))}
+                        {details.map((change) => {
+                          const href = isExpandableCategory(key)
+                            ? getChangeHref(key, change)
+                            : null;
+
+                          if (!href) {
+                            return (
+                              <li
+                                key={change.id}
+                                title={getChangeTitle(change)}
+                                className={cn(
+                                  'truncate py-1 leading-4',
+                                  change.status === 'deleted' && 'line-through'
+                                )}
+                              >
+                                {change.name}
+                              </li>
+                            );
+                          }
+
+                          return (
+                            <li key={change.id} className="truncate py-1 leading-4">
+                              <a
+                                href={href}
+                                title={getChangeTitle(change)}
+                                className="block truncate hover:text-foreground"
+                                onClick={(event) => {
+                                  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+                                    return;
+                                  }
+
+                                  event.preventDefault();
+                                  if (key === 'pages') {
+                                    if (useEditorStore.getState().editingComponentId) {
+                                      setEditingComponentId(null, null);
+                                    }
+                                    openPage(change.id);
+                                    return;
+                                  }
+
+                                  void editComponent(change.id);
+                                }}
+                              >
+                                {change.name}
+                              </a>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </CollapsibleContent>
                   </Collapsible>
