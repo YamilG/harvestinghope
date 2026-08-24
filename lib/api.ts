@@ -209,6 +209,10 @@ export const publishApi = {
     assets: number;
     translations: number;
     globalVariables: number;
+    changes: {
+      pages: { id: string; name: string; status: 'new' | 'modified' | 'deleted' | 'unpublishing' }[];
+      components: { id: string; name: string; status: 'new' | 'modified' | 'deleted' | 'unpublishing' }[];
+    };
     total: number;
   }>> {
     return apiRequest('/ycode/api/publish/preview');
