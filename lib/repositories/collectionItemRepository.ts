@@ -1112,32 +1112,6 @@ export async function deleteItem(id: string, isPublished: boolean = false): Prom
     throw new Error(`Failed to delete collection item values: ${valuesError.message}`);
   }
 }
-
-/**
- * Hard delete an item
- * Permanently removes item and all associated collection_item_values via CASCADE
- * Used during publish to permanently remove soft-deleted items
- * @param id - Item UUID
- * @param isPublished - Which version to delete: draft (false) or published (true). Defaults to false (draft).
- */
-export async function hardDeleteItem(id: string, isPublished: boolean = false): Promise<void> {
-  const client = await getSupabaseAdmin();
-
-  if (!client) {
-    throw new Error('Supabase client not configured');
-  }
-
-  const { error } = await client
-    .from('collection_items')
-    .delete()
-    .eq('id', id)
-    .eq('is_published', isPublished);
-
-  if (error) {
-    throw new Error(`Failed to hard delete collection item: ${error.message}`);
-  }
-}
-
 /**
  * Duplicate a collection item with its draft values
  * Creates a copy of the item with a new ID and modified values

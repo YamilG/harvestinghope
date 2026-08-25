@@ -653,14 +653,6 @@ export const collectionsApi = {
     return apiRequest<CollectionItemWithValues[]>(`/ycode/api/collections/${collectionId}/items/unpublished`);
   },
 
-  // Publish individual items
-  async publishItems(itemIds: string[]): Promise<ApiResponse<{ count: number }>> {
-    return apiRequest<{ count: number }>('/ycode/api/collections/items/publish', {
-      method: 'POST',
-      body: JSON.stringify({ item_ids: itemIds }),
-    });
-  },
-
   // Bulk delete items
   async bulkDeleteItems(itemIds: string[]): Promise<ApiResponse<{ deleted: number; errors?: string[] }>> {
     return apiRequest<{ deleted: number; errors?: string[] }>('/ycode/api/collections/items/delete', {
