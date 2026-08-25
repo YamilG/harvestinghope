@@ -168,6 +168,7 @@ const DESIGN_REFERENCE_JSON = JSON.stringify({
     effects: {
       opacity: { type: 'string' },
       boxShadow: { type: 'string' },
+      cursor: { type: 'enum', values: ['auto', 'default', 'pointer', 'text', 'grab', 'wait', 'not-allowed'] },
     },
     positioning: {
       position: { type: 'enum', values: ['relative', 'absolute', 'fixed', 'sticky'] },

@@ -128,6 +128,7 @@ export interface EffectsDesign {
   filter?: string;
   backdropFilter?: string;
   mixBlendMode?: string;
+  cursor?: string;
 }
 
 export interface PositioningDesign {

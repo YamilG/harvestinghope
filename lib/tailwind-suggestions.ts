@@ -367,6 +367,15 @@ const TAILWIND_CLASSES = [
   'opacity-50',
   'opacity-75',
   'opacity-100',
+
+  // Interactivity - Cursor
+  'cursor-auto',
+  'cursor-default',
+  'cursor-pointer',
+  'cursor-text',
+  'cursor-grab',
+  'cursor-wait',
+  'cursor-not-allowed',
   
   // Positioning - Position
   'static',

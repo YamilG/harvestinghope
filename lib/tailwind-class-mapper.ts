@@ -366,6 +366,7 @@ const CLASS_PROPERTY_MAP: Record<string, RegExp> = {
   blur: /^blur(-none|-sm|-md|-lg|-xl|-2xl|-3xl|-\[.+\])?$/,
   backdropBlur: /^backdrop-blur(-none|-sm|-md|-lg|-xl|-2xl|-3xl|-\[.+\])?$/,
   mixBlendMode: /^mix-blend-(normal|multiply|screen|overlay|darken|lighten|color-dodge|color-burn|hard-light|soft-light|difference|exclusion|hue|saturation|color|luminosity)$/,
+  cursor: /^cursor-.+$/,
 
   // Positioning
   position: /^(static|fixed|absolute|relative|sticky)$/,
@@ -1110,6 +1111,8 @@ export function propertyToClass(
       case 'mixBlendMode':
         if (value === 'normal') return '';
         return `mix-blend-${value}`;
+      case 'cursor':
+        return `cursor-${value}`;
     }
   }
 
@@ -1949,6 +1952,12 @@ export function classesToDesign(classes: string | string[]): Layer['design'] {
     if (cls.startsWith('mix-blend-')) {
       const match = cls.match(/^mix-blend-(.+)$/);
       if (match) design.effects!.mixBlendMode = match[1];
+    }
+
+    // Cursor
+    if (cls.startsWith('cursor-')) {
+      const value = cls.slice('cursor-'.length);
+      if (value) design.effects!.cursor = value;
     }
 
     // ===== POSITIONING =====

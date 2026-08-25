@@ -155,7 +155,7 @@ Each layer's \`design\` object controls its appearance. Use update_layer_design 
 - backgroundClip: "text" (for gradient text effect — also set typography color "transparent")
 - bgGradientVars: { "--bg-img": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" } — CSS gradient values
 
-**effects** — Shadows, opacity, blur, filters, blend modes
+**effects** — Shadows, opacity, blur, filters, blend modes, cursor
 - opacity: "0" to "1"
 - boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)"
 - blur: "4px"
@@ -165,6 +165,7 @@ Each layer's \`design\` object controls its appearance. Use update_layer_design 
 - mixBlendMode: "multiply" | "screen" | "overlay" | "darken" | "lighten" | … — blends a layer into
   whatever is beneath it. Combine with an absolutely-positioned div for color tints (multiply) and
   grain/texture overlays (overlay) — no htmlEmbed needed.
+- cursor: "pointer" | "default" | "text" | "grab" | "wait" | "not-allowed" | "auto"
 
 **positioning** — Position, z-index
 - position: "relative" | "absolute" | "fixed" | "sticky"
