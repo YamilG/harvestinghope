@@ -46,6 +46,7 @@ export interface TypographyDesign {
   verticalAlign?: string;
   color?: string;
   placeholderColor?: string;
+  textShadow?: string;
 }
 
 export interface SpacingDesign {

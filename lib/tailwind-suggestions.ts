@@ -130,6 +130,14 @@ const TAILWIND_CLASSES = [
   'tracking-wide',
   'tracking-wider',
   'tracking-widest',
+
+  // Typography - Text Shadow
+  'text-shadow-2xs',
+  'text-shadow-xs',
+  'text-shadow-sm',
+  'text-shadow-md',
+  'text-shadow-lg',
+  'text-shadow-none',
   
   // Spacing - Padding
   'p-0',
